@@ -1,9 +1,10 @@
 extends Node2D
+class_name Cell
 
-export var hp = 100
-export var stamina = 150
-export var hunger = 120
-export var speed = 1
+@export var hp = 100
+@export var stamina = 150
+@export var hunger = 120
+@export var speed = 1
 
 func move(food_cells):
 	# Find nearest food and move towards it
