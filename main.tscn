@@ -1,12 +1,16 @@
-[gd_scene load_steps=3 format=3 uid="uid://dnb4i4w5y7dms"]
+[gd_scene load_steps=5 format=3 uid="uid://dnb4i4w5y7dms"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_fcqjl"]
+[ext_resource type="PackedScene" uid="uid://bm3sl1f0e1hyh" path="res://cell.tscn" id="2_nx25s"]
+[ext_resource type="PackedScene" uid="uid://eabow21rfoc4" path="res://food.tscn" id="3_6wn1a"]
 
 [sub_resource type="Environment" id="Environment_vkf1d"]
 background_mode = 1
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_fcqjl")
+cell_object = ExtResource("2_nx25s")
+food_object = ExtResource("3_6wn1a")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 

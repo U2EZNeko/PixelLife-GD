@@ -12,6 +12,12 @@ class_name Cell
 
 var last_mating_time = -mating_cooldown_time  # Initialize to allow immediate mating after start
 
+var size: int = 15  # Size of the cell in pixels
+
+func _draw():
+	# Draw a simple green square to represent the food
+	draw_rect(Rect2(Vector2(0, 0), Vector2(size, size)), Color(1, 1, 1))
+
 func move(food_cells):
 	# Find nearest food and move towards it
 	var nearest_food = find_nearest_food(food_cells)
@@ -29,7 +35,7 @@ func update_status(delta):
 	elif hunger >= 90:
 		hp += 1
 
-func eat(food):
+func eat(_food):
 	hunger += 25
 	stamina += 15
 
@@ -83,5 +89,5 @@ func create_offspring(partner):
 
 		# Add new cell to the scene tree
 		get_parent().add_child(new_cell)
-		print("New cell created at", new_cell.position)
-		print("New cell created with HP: " + new_cell.hp + "Stam: " + new_cell.stamina + "Speed:" + new_cell.speed )
+		prints("New cell created at", new_cell.position)
+		prints("New cell created with HP:", new_cell.hp, "Stam:", new_cell.stamina, "Speed:", new_cell.speed)

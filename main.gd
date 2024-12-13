@@ -19,7 +19,7 @@ func _ready():
 	reset_simulation()
 
 func _process(delta):
-	update_simulation()
+	update_simulation(delta)
 	render_simulation()
 
 # Resets the simulation
@@ -37,7 +37,7 @@ func reset_simulation():
 	for index in range(NUM_INITIAL_CELLS):
 		# Create the cell
 		var cell = cell_object.instantiate()
-		$CellContainer.add_child(cell)
+		add_child(cell)
 
 		# Set cell position
 		cell.position = Vector2(randi_range(0, SCREEN_WIDTH), randi_range(0, SCREEN_HEIGHT))
@@ -46,22 +46,13 @@ func reset_simulation():
 		cells.append(cell)
 
 	for index in range(NUM_INITIAL_FOOD):
-		# Create the food
-		var food = food_object.instantiate()
-		$FoodContainer.add_child(food)
-
-		# Set food position
-		food.position = Vector2(randi_range(0, SCREEN_WIDTH), randi_range(0, SCREEN_HEIGHT))
-
-		# Add to internal list
-		food_cells.append(food)
-
+		spawn_food()
 
 # Updates the simulation
-func update_simulation():
+func update_simulation(delta):
 	for cell in cells:
 		cell.move(food_cells)
-		cell.update_status()
+		cell.update_status(delta)
 		handle_cell_food_interaction(cell)
 		handle_cell_mating(cell)
 	# Respawn food
@@ -74,28 +65,33 @@ func handle_cell_mating(cell):
 		if cell != other_cell and cell.position.distance_to(other_cell.position) <= cell.mating_distance_threshold:
 			if cell.mate(other_cell):
 				# New cells are already added in the `mate` function
-				print("Mating successful between cells at", cell.position, "and", other_cell.position)
+				prints("Mating successful between cells at", cell.position, "and", other_cell.position)
 
+# FIXME: This is all redundant. The cells and food objects can handle drawing themselves. Even better- they can just be sprites instead of doing it via code.
 # Render the cells and food
 func render_simulation():
 	pass
 	#update()  # Triggers the `_draw` method
 	# probably looking for queue_redraw() ^ 
 
-func _draw():
-	# Draw cells
-	for cell in cells:
-		draw_rect(Rect2(cell.position, Vector2(CELL_SIZE, CELL_SIZE)), Color(1, 1, 1))
-	# Draw food
-	for food in food_cells:
-		draw_rect(Rect2(food.position, Vector2(CELL_SIZE, CELL_SIZE)), Color(0, 1, 0))
+#func _draw():
+	## Draw cells
+	#for cell in cells:
+		#draw_rect(Rect2(cell.position, Vector2(CELL_SIZE, CELL_SIZE)), Color(1, 1, 1))
+	## Draw food
+	#for food in food_cells:
+		#draw_rect(Rect2(food.position, Vector2(CELL_SIZE, CELL_SIZE)), Color(0, 1, 0))
 
 func spawn_food():
-	var food = food_object.instantiate()  # Use the exported PackedScene variable
-	food.position = Vector2(randi() % SCREEN_WIDTH, randi() % SCREEN_HEIGHT)
-	$FoodContainer.add_child(food)
-	food_cells.append(food)
+	# Create the food
+	var food = food_object.instantiate()
+	add_child(food)
 
+	# Set food position
+	food.position = Vector2(randi_range(0, SCREEN_WIDTH), randi_range(0, SCREEN_HEIGHT))
+
+	# Add to internal list
+	food_cells.append(food)
 
 # Handle interaction between cells and food
 func handle_cell_food_interaction(cell):
