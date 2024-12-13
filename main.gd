@@ -1,5 +1,9 @@
 extends Node2D
 
+@export_category("Objects")
+@export var cell_object: PackedScene
+@export var food_object: PackedScene
+
 # Constants
 const SCREEN_WIDTH = 1400
 const SCREEN_HEIGHT = 900
@@ -20,15 +24,27 @@ func _process(delta):
 
 # Resets the simulation
 func reset_simulation():
-	for: cells in range(NUM_INITIAL_CELLS):
-		cell.position = Vector2(rand_range(0, SCREEN_WIDTH), rand_range(0, SCREEN_HEIGHT))
+	for index in range(NUM_INITIAL_CELLS):
+		# create the cell
+		var cell: Cell = cell_object.instantiate()
 		$CellContainer.add_child(cell)
-		cells.append(cell)
-	for: food in range(NUM_INITIAL_FOOD):
-		food.position = Vector2(rand_range(0, SCREEN_WIDTH), rand_range(0, SCREEN_HEIGHT))
-		$FoodContainer.add_child(food)
-		food_cells.append(food)
 
+		# set cell position
+		cell.position = Vector2(randi_range(0, SCREEN_WIDTH), randi_range(0, SCREEN_HEIGHT))
+
+		# add to internal list
+		cells.append(cell)
+
+	for index in range(NUM_INITIAL_FOOD):
+		# create the food
+		var food: Food = food_object.instantiate()
+		$FoodContainer.add_child(food)
+
+		# set food position
+		food.position = Vector2(randi_range(0, SCREEN_WIDTH), randi_range(0, SCREEN_HEIGHT))
+
+		# add to internal list
+		food_cells.append(food)
 
 # Updates the simulation
 func update_simulation():
@@ -42,7 +58,9 @@ func update_simulation():
 
 # Render the cells and food
 func render_simulation():
-	update()  # Triggers the `_draw` method
+	pass
+	#update()  # Triggers the `_draw` method
+	# probably looking for queue_redraw() ^ 
 
 func _draw():
 	# Draw cells
@@ -54,7 +72,7 @@ func _draw():
 
 # Spawn a new food item
 func spawn_food():
-	var food = preload("res://Food.tscn").instance()
+	var food = preload("res://food.tscn").instance()
 	food.position = Vector2(randi() % SCREEN_WIDTH, randi() % SCREEN_HEIGHT)
 	add_child(food)
 	food_cells.append(food)
