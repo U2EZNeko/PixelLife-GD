@@ -18,7 +18,7 @@ var food_cells = []
 func _ready():
 	reset_simulation()
 
-func _process(delta):
+func _process(_delta):
 	update_simulation()
 	render_simulation()
 
@@ -27,7 +27,7 @@ func reset_simulation():
 	for index in range(NUM_INITIAL_CELLS):
 		# create the cell
 		var cell: Cell = cell_object.instantiate()
-		$CellContainer.add_child(cell)
+		add_child(cell)
 
 		# set cell position
 		cell.position = Vector2(randi_range(0, SCREEN_WIDTH), randi_range(0, SCREEN_HEIGHT))
@@ -36,15 +36,7 @@ func reset_simulation():
 		cells.append(cell)
 
 	for index in range(NUM_INITIAL_FOOD):
-		# create the food
-		var food: Food = food_object.instantiate()
-		$FoodContainer.add_child(food)
-
-		# set food position
-		food.position = Vector2(randi_range(0, SCREEN_WIDTH), randi_range(0, SCREEN_HEIGHT))
-
-		# add to internal list
-		food_cells.append(food)
+		spawn_food()
 
 # Updates the simulation
 func update_simulation():
@@ -72,9 +64,14 @@ func _draw():
 
 # Spawn a new food item
 func spawn_food():
-	var food = preload("res://food.tscn").instance()
-	food.position = Vector2(randi() % SCREEN_WIDTH, randi() % SCREEN_HEIGHT)
+	# create the food
+	var food: Food = food_object.instantiate()
 	add_child(food)
+
+	# set food position
+	food.position = Vector2(randi_range(0, SCREEN_WIDTH), randi_range(0, SCREEN_HEIGHT))
+
+	# add to internal list
 	food_cells.append(food)
 
 # Handle interaction between cells and food

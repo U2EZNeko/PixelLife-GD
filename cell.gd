@@ -23,7 +23,7 @@ func update_status():
 	elif hunger >= 90:
 		hp += 1
 
-func eat(food):
+func eat(_food):
 	hunger += 25
 	stamina += 15
 
