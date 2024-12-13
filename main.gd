@@ -24,27 +24,38 @@ func _process(delta):
 
 # Resets the simulation
 func reset_simulation():
+	if cell_object == null:
+		push_error("Error: 'cell_object' is not assigned in the inspector.")
+		return
+	if food_object == null:
+		push_error("Error: 'food_object' is not assigned in the inspector.")
+		return
+
+	cells.clear()
+	food_cells.clear()
+
 	for index in range(NUM_INITIAL_CELLS):
-		# create the cell
-		var cell: Cell = cell_object.instantiate()
+		# Create the cell
+		var cell = cell_object.instantiate()
 		$CellContainer.add_child(cell)
 
-		# set cell position
+		# Set cell position
 		cell.position = Vector2(randi_range(0, SCREEN_WIDTH), randi_range(0, SCREEN_HEIGHT))
 
-		# add to internal list
+		# Add to internal list
 		cells.append(cell)
 
 	for index in range(NUM_INITIAL_FOOD):
-		# create the food
-		var food: Food = food_object.instantiate()
+		# Create the food
+		var food = food_object.instantiate()
 		$FoodContainer.add_child(food)
 
-		# set food position
+		# Set food position
 		food.position = Vector2(randi_range(0, SCREEN_WIDTH), randi_range(0, SCREEN_HEIGHT))
 
-		# add to internal list
+		# Add to internal list
 		food_cells.append(food)
+
 
 # Updates the simulation
 func update_simulation():
@@ -52,9 +63,18 @@ func update_simulation():
 		cell.move(food_cells)
 		cell.update_status()
 		handle_cell_food_interaction(cell)
+		handle_cell_mating(cell)
 	# Respawn food
 	while len(food_cells) < NUM_INITIAL_FOOD:
 		spawn_food()
+
+# Handle interaction between cells for mating
+func handle_cell_mating(cell):
+	for other_cell in cells:
+		if cell != other_cell and cell.position.distance_to(other_cell.position) <= cell.mating_distance_threshold:
+			if cell.mate(other_cell):
+				# New cells are already added in the `mate` function
+				print("Mating successful between cells at", cell.position, "and", other_cell.position)
 
 # Render the cells and food
 func render_simulation():
@@ -70,12 +90,12 @@ func _draw():
 	for food in food_cells:
 		draw_rect(Rect2(food.position, Vector2(CELL_SIZE, CELL_SIZE)), Color(0, 1, 0))
 
-# Spawn a new food item
 func spawn_food():
-	var food = preload("res://food.tscn").instance()
+	var food = food_object.instantiate()  # Use the exported PackedScene variable
 	food.position = Vector2(randi() % SCREEN_WIDTH, randi() % SCREEN_HEIGHT)
-	add_child(food)
+	$FoodContainer.add_child(food)
 	food_cells.append(food)
+
 
 # Handle interaction between cells and food
 func handle_cell_food_interaction(cell):
