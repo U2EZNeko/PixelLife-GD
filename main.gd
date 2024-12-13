@@ -19,40 +19,37 @@ func _ready():
 	reset_simulation()
 
 func _process(delta):
-	update_simulation(delta)
+	update_simulation()
 	render_simulation()
 
 # Resets the simulation
 func reset_simulation():
-	if cell_object == null:
-		push_error("Error: 'cell_object' is not assigned in the inspector.")
-		return
-	if food_object == null:
-		push_error("Error: 'food_object' is not assigned in the inspector.")
-		return
+	var cell_container = $CellContainer
+	var food_container = $FoodContainer
 
+	if cell_container == null or food_container == null:
+		push_error("Error: 'CellContainer' or 'FoodContainer' is missing in the scene tree.")
+		return
 	cells.clear()
 	food_cells.clear()
 
 	for index in range(NUM_INITIAL_CELLS):
-		# Create the cell
 		var cell = cell_object.instantiate()
-		add_child(cell)
-
-		# Set cell position
+		cell_container.add_child(cell)
 		cell.position = Vector2(randi_range(0, SCREEN_WIDTH), randi_range(0, SCREEN_HEIGHT))
-
-		# Add to internal list
 		cells.append(cell)
 
 	for index in range(NUM_INITIAL_FOOD):
-		spawn_food()
+		var food = food_object.instantiate()
+		food_container.add_child(food)
+		food.position = Vector2(randi_range(0, SCREEN_WIDTH), randi_range(0, SCREEN_HEIGHT))
+		food_cells.append(food)
 
 # Updates the simulation
-func update_simulation(delta):
+func update_simulation():
 	for cell in cells:
 		cell.move(food_cells)
-		cell.update_status(delta)
+		cell.update_status()
 		handle_cell_food_interaction(cell)
 		handle_cell_mating(cell)
 	# Respawn food
@@ -65,33 +62,29 @@ func handle_cell_mating(cell):
 		if cell != other_cell and cell.position.distance_to(other_cell.position) <= cell.mating_distance_threshold:
 			if cell.mate(other_cell):
 				# New cells are already added in the `mate` function
-				prints("Mating successful between cells at", cell.position, "and", other_cell.position)
+				print("Mating successful between cells at", cell.position, "and", other_cell.position)
 
-# FIXME: This is all redundant. The cells and food objects can handle drawing themselves. Even better- they can just be sprites instead of doing it via code.
 # Render the cells and food
 func render_simulation():
 	pass
 	#update()  # Triggers the `_draw` method
 	# probably looking for queue_redraw() ^ 
 
-#func _draw():
-	## Draw cells
-	#for cell in cells:
-		#draw_rect(Rect2(cell.position, Vector2(CELL_SIZE, CELL_SIZE)), Color(1, 1, 1))
-	## Draw food
-	#for food in food_cells:
-		#draw_rect(Rect2(food.position, Vector2(CELL_SIZE, CELL_SIZE)), Color(0, 1, 0))
+func _draw():
+	# Draw cells
+	for cell in cells:
+		draw_rect(Rect2(cell.position, Vector2(CELL_SIZE, CELL_SIZE)), Color(1, 1, 1))
+	# Draw food
+	for food in food_cells:
+		draw_rect(Rect2(food.position, Vector2(CELL_SIZE, CELL_SIZE)), Color(0, 1, 0))
 
+# Spawn a new food item
 func spawn_food():
-	# Create the food
-	var food = food_object.instantiate()
-	add_child(food)
+	var food_container = $FoodContainer
 
-	# Set food position
-	food.position = Vector2(randi_range(0, SCREEN_WIDTH), randi_range(0, SCREEN_HEIGHT))
-
-	# Add to internal list
-	food_cells.append(food)
+	if food_container == null:
+		push_error("Error: 'FoodContainer' is missing in the scene tree.")
+		return
 
 # Handle interaction between cells and food
 func handle_cell_food_interaction(cell):
