@@ -1,6 +1,38 @@
-[gd_scene load_steps=2 format=3 uid="uid://bm3sl1f0e1hyh"]
+[gd_scene load_steps=3 format=3 uid="uid://bm3sl1f0e1hyh"]
 
 [ext_resource type="Script" path="res://cell.gd" id="1_fqmaa"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wywcy"]
+size = Vector2(15, 15)
+
 [node name="Cell" type="Node2D"]
 script = ExtResource("1_fqmaa")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(15, 15)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -7.5
+offset_top = -7.5
+offset_right = 7.5
+offset_bottom = 7.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Collision Detector" type="Area2D" parent="."]
+collision_mask = 3
+input_pickable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision Detector"]
+shape = SubResource("RectangleShape2D_wywcy")
+
+[node name="Mating Cooldown" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 5.0
+one_shot = true
+autostart = true
+
+[connection signal="area_entered" from="Collision Detector" to="." method="_on_collision_detected"]
