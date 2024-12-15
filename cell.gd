@@ -123,7 +123,7 @@ func _create_offspring(partner: Cell) -> void:
 
 		# Add new cell to the scene tree
 		get_parent().call_deferred("add_child", new_cell)
-		## INFO: spamming prints causes lag
+		## INFO: i know these are for debug
 		#prints("New cell created at", new_cell.position)
 		#prints("New cell created with HP:", new_cell.hp, "Stam:", new_cell.stamina, "Speed:", new_cell.speed)
 
